@@ -46,6 +46,8 @@ def ExtractContestantList( contestantsFile ):
             maxNameTokens = max( maxNameTokens, len( contestant.NameTokens ) )
             contestantList.append( contestant )
             print( "Name from line: '{0}' (Start number {1})".format( contestant.Name, contestant.StartingNumber ))
+        else:
+            print( "Failed to parse line: {0}".format(line))
     return (contestantList, maxNameTokens)
     
 
@@ -65,7 +67,7 @@ def ThreeLineRecords( file ):
             yield line
             line = l
             count = 1
-    return line
+    yield line
 
 def FindFileStartingWith( filenameBeginning, musicFiles ):
     for f in musicFiles:
