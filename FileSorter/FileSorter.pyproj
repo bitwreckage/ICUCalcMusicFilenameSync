@@ -8,13 +8,13 @@
     <StartupFile>FileSorter.py</StartupFile>
     <SearchPath>
     </SearchPath>
-    <WorkingDirectory>D:\Users\Steffen\Documents\Development\Windows\FileSorter\TestFiles\FromRKK</WorkingDirectory>
+    <WorkingDirectory>D:\Users\Steffen\Documents\Development\Windows\FileSorter\TestFiles\FromRKK\Stevne februar 2017</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>FileSorter</Name>
     <RootNamespace>FileSorter</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>deltakere.csv "D:\Users\Steffen\Documents\Development\Windows\FileSorter\TestFiles\music03"</CommandLineArguments>
+    <CommandLineArguments>OffisiellTrekning-csv\startingorderwithclubs_cubsjentero12.csv musikk</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -27,6 +27,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="FileSorter.py" />
+    <Compile Include="test.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

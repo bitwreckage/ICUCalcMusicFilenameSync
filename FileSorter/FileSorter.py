@@ -69,7 +69,7 @@ def ThreeLineRecords( file ):
 
 def FindFileStartingWith( filenameBeginning, musicFiles ):
     for f in musicFiles:
-        if f.Name.startswith( filenameBeginning ):
+        if not f.IsTaken() and f.Name.startswith( filenameBeginning ):
             print( "File: {0}".format(f.Name) )
             f.Take()
             return f.Name
@@ -85,29 +85,30 @@ def LocateAndRenameMusicWithStrategy( nameExtractFunction, contestants, musicFil
     for contestant in contestants:
         if( contestant.MusicFound == False ):
             searchedName = nameExtractFunction(contestant)
-            print( "Search for file starting with: {0}".format(searchedName) )
-            musicFilename = FindFileStartingWith( searchedName, musicFiles)
-            if( musicFilename != ""):
-                newMusicFilename = '{0:03d}-{1}'.format(contestant.StartingNumber, musicFilename)
-                RenameFile( musicFilesPath, musicFilename, newMusicFilename )
-                contestant.MusicFound = True
-                renameCount += 1
+            if( searchedName != None ):
+                print( "Search for file starting with: {0}".format(searchedName) )
+                musicFilename = FindFileStartingWith( searchedName, musicFiles)
+                if( musicFilename != ""):
+                    newMusicFilename = '{0:03d}-{1}'.format(contestant.StartingNumber, musicFilename)
+                    RenameFile( musicFilesPath, musicFilename, newMusicFilename )
+                    contestant.MusicFound = True
+                    renameCount += 1
     return renameCount
 
 
-def PlainNameStrategy( contestant, numNameTokens ):
-    tokens = min( len( contestant.NameTokens ), numNameTokens )
-    return ' '.join( contestant.NameTokens[:tokens] ).lower()
+def PlainNameStrategy( contestant, numNameTokens, joinCharacter ):
+    if( numNameTokens > len( contestant.NameTokens )):
+       return None
+    return joinCharacter.join( contestant.NameTokens[:numNameTokens] ).lower()
+
+def KeepLastNameStrategy( contestant, numNameTokens, joinCharacter):
+    if( numNameTokens > len( contestant.NameTokens ) - 1):
+       return None
+    tokens = contestant.NameTokens[:numNameTokens]
+    tokens.append(contestant.NameTokens[-1])
+    return joinCharacter.join( tokens ).lower()
+
        
-def CompactedNameStrategy( contestant, numNameTokens ):
-    tokens = min( len( contestant.NameTokens ), numNameTokens )
-    return "".join( contestant.NameTokens[:tokens] ).lower()
-
-def UnderscoreForSpaceStrategy( contestant, numNameTokens ):
-    tokens = min( len( contestant.NameTokens ), numNameTokens )
-    return "_".join( contestant.NameTokens[:tokens] ).lower()
-
-
 def GetFiles(path):
     myFiles = []
     files = os.listdir(path)
@@ -143,10 +144,13 @@ musicFiles = GetFiles( musicFilesPath )
 
 renamedFilesCount = 0
 
+joinCharacters = [' ', '-', '_', '.', '']
+
 for tokens in range(maxTokens,0,-1):
-    fileMatchingStrategies = [lambda c: PlainNameStrategy(c,tokens), lambda c: UnderscoreForSpaceStrategy(c,tokens), lambda c: CompactedNameStrategy(c,tokens)]
-    for strategy in fileMatchingStrategies:
-        renamedFilesCount = LocateAndRenameMusicWithStrategy( strategy, contestants, musicFiles, musicFilesPath, renamedFilesCount )
+    for joinChar in joinCharacters:
+        fileMatchingStrategies = [lambda c: PlainNameStrategy(c,tokens,joinChar), lambda c: KeepLastNameStrategy(c,tokens, joinChar)]
+        for strategy in fileMatchingStrategies:
+            renamedFilesCount = LocateAndRenameMusicWithStrategy( strategy, contestants, musicFiles, musicFilesPath, renamedFilesCount )
 
 missingCount = 0
 for c in contestants:
